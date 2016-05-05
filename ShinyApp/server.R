@@ -9,34 +9,27 @@
 
 library(shiny)
 library(ggplot2)
-library(reshape2)
-RiceData<-read.csv("/home/bis180l_local/MEGA/Assignment_4_Anderson.Jordan/RiceSNPData/RiceDiversity.44K.MSU6.Phenotypes.csv",header=T)
-Rice.melt<-melt(RiceData,id.vars="Region")
+
+load("~/MEGAsync/Assignment_4_Zaman.Paul/data_from_SNP_lab.Rdata")
+
+
+data.pheno.mds <- merge(geno.mds,data.pheno,by="row.names",all=T)
 
 # Define server logic required to draw a boxplot
 shinyServer(function(input, output) {
   
-  # Expression that generates a boxplot. The expression is
-  # wrapped in a call to renderPlot to indicate that:
-  #
-  #  1) It is "reactive" and therefore should re-execute automatically
-  #     when inputs change
-  #  2) Its output type is a plot
-  Rice.melt.ss<-subset(RiceData,variable=input$trait)
-  output$boxPlot <- renderPlot({
+  
+  output$distPlot <- renderPlot({
     
-    # set up the plot
-    pl <- ggplot(data = Rice.melt.ss,
-                 #Use aes_string below so that input$trait is interpreted
-                 #correctly.  The other variables need to be quoted
-                 aes_string(x=input$trait,
-                            y=input$trait,
-                            fill="Region"
-                 )
+    
+    # draw the histogram with the specified number of bins
+    pl<-ggplot(data=data.pheno.mds,
+               aes_string(x=input$Variable1,
+                          y=input$Variable2,
+                          color=input$Color
+               )
     )
+    pl+geom_point()
     
-    # draw the boxplot for the specified trait
-    pl + geom_point()
   })
 })
-
