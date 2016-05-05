@@ -7,34 +7,34 @@
 #    http://shiny.rstudio.com/
 #
 
-llibrary(shiny)
-library(ggplot2)
+library(shiny)
 
-# Define server logic required to draw a boxplot
-RiceData<-read.csv("/home/bis180l_local/MEGA/Assignment_4_Anderson.Jordan/RiceSNPData/RiceDiversity.44K.MSU6.Phenotypes.csv",header=T)
-shinyServer(function(input, output) {
+# Define UI for application that draws a histogram
+shinyUI(fluidPage( #create the overall page
   
-  # Expression that generates a boxplot. The expression is
-  # wrapped in a call to renderPlot to indicate that:
-  #
-  #  1) It is "reactive" and therefore should re-execute automatically
-  #     when inputs change
-  #  2) Its output type is a plot
+  # Application title
+  titlePanel("Iris Data"),
   
-  output$boxPlot <- renderPlot({
+  # Some helpful information
+  helpText("This application creates a boxplot to show difference between",
+           "iris species.  Please use the radio box below to choose a trait",
+           "for plotting"),
+  
+  # Sidebar with a radio box to input which trait will be plotted
+  sidebarLayout(
+    sidebarPanel(
+      radioButtons("trait", #the input variable that the value will go into
+                   "Choose a trait to display:",
+                   c("Seed.length",
+                     "Seed.width",
+                     "Seed.volume",
+                     "Seed.surface.area")
+      )),
     
-    # set up the plot
-    pl <- ggplot(data = iris,
-                 #Use aes_string below so that input$trait is interpreted
-                 #correctly.  The other variables need to be quoted
-                 aes_string(x="Species",
-                            y=input$trait,
-                            fill="Species"
-                 )
+    # Show a plot of the generated distribution
+    mainPanel(plotOutput("boxPlot")
     )
-    
-    # draw the boxplot for the specified trait
-    pl + geom_boxplot()
-  })
-})
+  )
+))
+
 
